@@ -3,6 +3,7 @@
 
 Listings/*
 Objects/*
+*.Leon
 
 # Object files
 *.o
