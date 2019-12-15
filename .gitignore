@@ -5,6 +5,9 @@ Listings/*
 Objects/*
 *.Leon
 
+*.uvguix.K02
+*.scvd
+
 # Object files
 *.o
 *.ko

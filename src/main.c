@@ -41,7 +41,6 @@ int main(void)
 			
   /* Main loop */
   while (1) {
-						
 	}
 
 }
@@ -50,6 +49,7 @@ int main(void)
 /* Frequencies setup */
 void Setup_CPU_Clock(void)
 {
+
   /* Enable HSE */
   RST_CLK_HSEconfig(RST_CLK_HSE_ON);
   if (RST_CLK_HSEstatus() != SUCCESS)
@@ -61,10 +61,8 @@ void Setup_CPU_Clock(void)
   }
 
   /* CPU_C1_SEL = HSE */
-  //RST_CLK_CPU_PLLconfig(RST_CLK_CPU_PLLsrcHSEdiv1, RST_CLK_CPU_PLLmul10);
-  	/* Select HSI/2 as CPU_CLK source*/
-  RST_CLK_CPU_PLLconfig (RST_CLK_CPU_PLLsrcHSIdiv2,0);
-	RST_CLK_CPU_PLLcmd(ENABLE);
+  RST_CLK_CPU_PLLconfig(RST_CLK_CPU_PLLsrcHSEdiv1, RST_CLK_CPU_PLLmul10);
+  RST_CLK_CPU_PLLcmd(ENABLE);
   if (RST_CLK_CPU_PLLstatus() != SUCCESS)
   {
     /* Trap */
@@ -72,14 +70,43 @@ void Setup_CPU_Clock(void)
     {
     }
   }
-
+  
+ 	RST_CLK_PCLKcmd(RST_CLK_PCLK_EEPROM, ENABLE);
   /* CPU_C3_SEL = CPU_C2_SEL */
   RST_CLK_CPUclkPrescaler(RST_CLK_CPUclkDIV1);
   /* CPU_C2_SEL = PLL */
   RST_CLK_CPU_PLLuse(ENABLE);
   /* HCLK_SEL = CPU_C3_SEL */
   RST_CLK_CPUclkSelection(RST_CLK_CPUclkCPU_C3);
+  
+  RST_CLK_PCLKcmd(RST_CLK_PCLK_PORTF,ENABLE);
+
+    PORT_InitTypeDef GPIOInitStruct;
+
+  RST_CLK_PCLKcmd(RST_CLK_PCLK_PORTA, ENABLE);
+
+  GPIOInitStruct.PORT_PULL_UP   = PORT_PULL_UP_OFF;  
+  GPIOInitStruct.PORT_PULL_DOWN = PORT_PULL_DOWN_OFF;  
+  GPIOInitStruct.PORT_PD_SHM    = PORT_PD_SHM_OFF;     
+  GPIOInitStruct.PORT_PD        = PORT_PD_DRIVER;      
+  GPIOInitStruct.PORT_GFEN      = PORT_GFEN_OFF;       
+  GPIOInitStruct.PORT_FUNC      = PORT_FUNC_ALTER;     
+  GPIOInitStruct.PORT_SPEED     = PORT_SPEED_MAXFAST;  
+  GPIOInitStruct.PORT_MODE      = PORT_MODE_DIGITAL;   
+
+  GPIOInitStruct.PORT_Pin       = PORT_Pin_6;
+  GPIOInitStruct.PORT_OE        = PORT_OE_OUT;
+  PORT_Init(MDR_PORTA, &GPIOInitStruct);
+
+  GPIOInitStruct.PORT_Pin       = PORT_Pin_7;
+  GPIOInitStruct.PORT_OE        = PORT_OE_IN;
+  PORT_Init(MDR_PORTA, &GPIOInitStruct);
+  
 }
+
+
+
+
 
 /* USB Device layer setup and powering on */
 void Setup_USB(void)
@@ -143,6 +170,8 @@ USB_Result USB_CDC_RecieveData(uint8_t* Buffer, uint32_t Length)
 		switch(header->type) {
 			
 			case RS485: 
+        
+        crcCheck = 1;
 				
 				USB_CDC_SendData(&crcCheck, 1);
 			
@@ -153,6 +182,8 @@ USB_Result USB_CDC_RecieveData(uint8_t* Buffer, uint32_t Length)
 				break;
 
 			case CAN:
+  
+        crcCheck = 2;
 				
 				USB_CDC_SendData(&crcCheck, 1);
 				

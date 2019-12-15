@@ -29,20 +29,21 @@ void init_CAN(void)
 	/* CAN cell init */
 	CAN_StructInit (&sCAN);
 
-	sCAN.CAN_ROP  = ENABLE;
-	sCAN.CAN_SAP  = ENABLE;
-	sCAN.CAN_STM  = ENABLE;
-	sCAN.CAN_ROM  = ENABLE;
-	sCAN.CAN_PSEG = CAN_PSEG_Mul_2TQ;
-	sCAN.CAN_SEG1 = CAN_SEG1_Mul_5TQ;
-	sCAN.CAN_SEG2 = CAN_SEG2_Mul_5TQ;
-	sCAN.CAN_SJW  = CAN_SJW_Mul_4TQ;
-	sCAN.CAN_SB   = CAN_SB_3_SAMPLE;
-	sCAN.CAN_BRP  = 4;
+  sCAN.CAN_ROP  = DISABLE;         
+  sCAN.CAN_SAP  = DISABLE;          
+  sCAN.CAN_STM  = DISABLE;          
+  sCAN.CAN_ROM  = DISABLE;       
+  sCAN.CAN_PSEG = CAN_PSEG_Mul_2TQ;  
+  sCAN.CAN_SEG1 = CAN_SEG1_Mul_4TQ; 
+  sCAN.CAN_SEG2 = CAN_SEG2_Mul_3TQ; 
+  sCAN.CAN_SJW  = CAN_SJW_Mul_2TQ;   
+  sCAN.CAN_SB   = CAN_SB_1_SAMPLE;   
+  sCAN.CAN_BRP  = 15;                
+  sCAN.CAN_OVER_ERROR_MAX = 255;  
 
 	CAN_Init(MDR_CAN1,&sCAN);	
 
-	CAN_Cmd(MDR_CAN1, ENABLE);
+
 	
 	/* Disable all CAN1 interrupt */
 	CAN_ITConfig( MDR_CAN1, CAN_IT_GLBINTEN | CAN_IT_RXINTEN | CAN_IT_TXINTEN |
@@ -55,6 +56,8 @@ void init_CAN(void)
 
 	/* receive buffer enable */
 	//CAN_Receive(MDR_CAN1, rx_buf, ENABLE);
+  
+  CAN_Cmd(MDR_CAN1, ENABLE);
 }
 
 void CAN_Send(uint8_t* arr, unsigned short int length)
